@@ -28,6 +28,7 @@ var BooleanValueComponent = React.createClass({
     },
     handleChange: function (e) {
         this.setState({value: e.target.value});
+        this.props.feedback({value: this.state.value});
     }
 });
 
@@ -45,6 +46,7 @@ var NumberValueComponent = React.createClass({
     },
     handleChange: function (e) {
         this.setState({value: e.target.value});
+        this.props.feedback({value: this.state.value});
     }
 });
 
@@ -61,6 +63,7 @@ var TextValueComponent = React.createClass({
     },
     handleChange: function (e) {
         this.setState({value: e.target.value});
+        this.props.feedback({value: this.state.value});
     }
 });
 
@@ -73,15 +76,15 @@ var CombinedValueComponent = React.createClass({
                 <span><button className="btn accent-3 waves-effect waves-teal">Add</button></span>
             </div>
             <div>
-                <BooleanValueComponent/>
+                <BooleanValueComponent feedback={this.feedback}/>
                 <span><button className="btn accent-3 waves-effect waves-teal">Add</button></span>
             </div>
             <div>
-                <NumberValueComponent/>
+                <NumberValueComponent feedback={this.feedback}/>
                 <span><button className="btn accent-3 waves-effect waves-teal">Add</button></span>
             </div>
             <div>
-                <TextValueComponent/>
+                <TextValueComponent feedback={this.feedback}/>
                 <span><button className="btn accent-3 waves-effect waves-teal">Add</button></span>
             </div>
             <h6>Collection types</h6>
@@ -90,6 +93,15 @@ var CombinedValueComponent = React.createClass({
                 <button className="btn waves-effect">Add Object</button>
             </div>
         </div>
+    },
+    getInitialState: function () {
+        return {
+            type: "null",
+            value: null
+        };
+    },
+    feedback: function (newObject) {
+        this.state.value = newObject.value;
     }
 });
 
@@ -158,7 +170,7 @@ var TreeComponent = React.createClass({
             }
         };
 
-        return <ul className="collection">{flatten("root", this.state.tree)}</ul>
+        return <ul className="collection">{flatten("[root]", this.state.tree)}</ul>
     },
     getInitialState: function () {
         return {tree: this.props.tree}
@@ -169,14 +181,20 @@ var TreeComponent = React.createClass({
 var FullComponent = React.createClass({
     render: function () {
         return <div>
-            <BreadcrumbComponent path={[1, 2, 3]}/>
-            <TreeComponent tree={{name: 'x', gate: [1,2,3], core: {'l': 'l'}}}/>
+            <BreadcrumbComponent path={this.state.path}/>
+            <TreeComponent tree={this.state.data}/>
         </div>;
     },
     getInitialState: function () {
         return {
             data: {},
-            path: ["root"]
+            path: ["[root]"]
         }
+    },
+    getJSONRepresentation: function () {
+        return JSON.stringify(this.state.data);
+    },
+    setDataFromJSON: function (str) {
+        this.state.data = JSON.parse(str);
     }
 });
