@@ -1,0 +1,23 @@
+{
+  "name": "jsonbuilder",
+  "description": "Edit .json files manually.",
+  "main": "index.js",
+  "authors": [
+    "Wickramaranga Abeygunawardhana"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "json"
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "Materialize": "materialize#^0.97.6"
+  }
+}
