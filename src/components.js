@@ -24,10 +24,12 @@ var BooleanValueComponent = React.createClass({
         </span>;
     },
     getInitialState: function () {
+        // Initial state is set by properties.
         return {value: this.props.value};
     },
     handleChange: function (e) {
         this.setState({value: e.target.value});
+        // Feedback function enables propagation of data to upper layers.
         this.props.feedback({value: this.state.value});
     }
 });
@@ -70,35 +72,70 @@ var TextValueComponent = React.createClass({
 var CombinedValueComponent = React.createClass({
     render: function () {
         return <div className="combinedValueComponent">
-            <h6>Atom types</h6>
-            <div>
-                <NullValueComponent/>
-                <span><button className="btn accent-3 waves-effect waves-teal">Add</button></span>
-            </div>
-            <div>
-                <BooleanValueComponent feedback={this.feedback}/>
-                <span><button className="btn accent-3 waves-effect waves-teal">Add</button></span>
-            </div>
-            <div>
-                <NumberValueComponent feedback={this.feedback}/>
-                <span><button className="btn accent-3 waves-effect waves-teal">Add</button></span>
-            </div>
-            <div>
-                <TextValueComponent feedback={this.feedback}/>
-                <span><button className="btn accent-3 waves-effect waves-teal">Add</button></span>
-            </div>
-            <h6>Collection types</h6>
-            <div>
-                <button className="btn waves-effect">Add Array</button>
-                <button className="btn waves-effect">Add Object</button>
-            </div>
+            <ul className="collapsible" data-collapsible="accordion">
+                <div className="container"><h5>Atom Types</h5></div>
+                <li name="null" onClick={this.handleItemClick}>
+                    <div className={"collapsible-header" + (this.state.type == "null" ? " active" : "")}>
+                        <i className="material-icons">not_interested</i>Null
+                    </div>
+                    <div className="collapsible-body"><p><NullValueComponent /></p></div>
+                </li>
+                <li name="boolean" onClick={this.handleItemClick}>
+                    <div className={"collapsible-header"+ (this.state.type == "boolean" ? " active" : "")}>
+                        <i className="material-icons">thumbs_up_down</i>Boolean
+                    </div>
+                    <div className="collapsible-body"><p><BooleanValueComponent feedback={this.feedback}/></p></div>
+                </li>
+                <li name="number" onClick={this.handleItemClick}>
+                    <div className={"collapsible-header"+ (this.state.type == "number" ? " active" : "")}>
+                        <i className="material-icons">whatshot</i>Number
+                    </div>
+                    <div className="collapsible-body"><p><NumberValueComponent feedback={this.feedback}/></p></div>
+                </li>
+                <li name="text" onClick={this.handleItemClick}>
+                    <div className={"collapsible-header"+ (this.state.type == "text" ? " active" : "")}>
+                        <i className="material-icons">spellcheck</i>Text
+                    </div>
+                    <div className="collapsible-body"><p><TextValueComponent feedback={this.feedback}/></p></div>
+                </li>
+                <div className="container"><h5>Collection Types</h5></div>
+                <li name="array" onClick={this.handleItemClick}>
+                    <div className={"collapsible-header"+ (this.state.type == "array" ? " active" : "")}>
+                        <i className="material-icons">whatshot</i>Array
+                    </div>
+                    <div className="collapsible-body"><p>This will add an empty array</p></div>
+                </li>
+                <li name="object" onClick={this.handleItemClick}>
+                    <div className={"collapsible-header"+ (this.state.type == "object" ? " active" : "")}>
+                        <i className="material-icons">whatshot</i>Object
+                    </div>
+                    <div className="collapsible-body"><p>This will add an empty object</p></div>
+                </li>
+            </ul>
+            <button className="btn waves-effect">Okay</button>
         </div>
     },
     getInitialState: function () {
-        return {
-            type: "null",
-            value: null
-        };
+        // Element set externally.
+        return this.props.element;
+        // return {
+        //     type: "null",
+        //     value: null
+        // };
+    },
+    handleItemClick: function (evt) {
+        if (this.state.type == evt) {
+
+        }
+        this.state.type = evt;
+
+        if (evt == "array") {
+            this.state.value = [];
+        } else if (evt == "object") {
+            this.state.value = {};
+        } else if (evt == "null") {
+            this.state.value = null;
+        }
     },
     feedback: function (newObject) {
         this.state.value = newObject.value;
@@ -183,6 +220,7 @@ var FullComponent = React.createClass({
         return <div>
             <BreadcrumbComponent path={this.state.path}/>
             <TreeComponent tree={this.state.data}/>
+            <CombinedValueComponent />
         </div>;
     },
     getInitialState: function () {
