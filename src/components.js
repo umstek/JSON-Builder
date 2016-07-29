@@ -2,19 +2,38 @@
  * Created by Wickramaranga on 7/4/2016.
  */
 
-//import * as React from "react";
+// import * as React from "react";
 
-var NullValueComponent = React.createClass({
-    render: function () {
+class BaseComponent extends React.Component { // Base Class for ease. :)
+    _bind(...methods) {
+        methods.forEach((method) => this[method] = this[method].bind(this));
+    }
+}
+
+
+class NullValueComponent extends BaseComponent {
+    constructor() {
+        super();
+        this._bind(); // Not needed.
+    }
+
+    //noinspection JSMethodCanBeStatic
+    render() {
         return <span className="nullValueValueComponent">
             <i>null</i>
         </span>;
     }
-});
+}
 
-var BooleanValueComponent = React.createClass({
-    render: function () {
-        return <span className="switch booleanValueComponent" onChange={this.handleChange}>
+
+class BooleanValueComponent extends BaseComponent {
+    constructor() {
+        super();
+        this._bind('_handleChange');
+    }
+
+    render() {
+        return <span className="switch booleanValueComponent" onChange={this._handleChange}>
             <label>
                 False
                 <input type="checkbox" value={this.state.value}/>
@@ -22,90 +41,114 @@ var BooleanValueComponent = React.createClass({
                 True
             </label>
         </span>;
-    },
-    getInitialState: function () {
+    }
+
+    getInitialState() {
         // Initial state is set by properties.
         return {value: this.props.value};
-    },
-    handleChange: function (e) {
+    }
+
+    _handleChange(e) {
         this.setState({value: e.target.value});
         // Feedback function enables propagation of data to upper layers.
-        this.props.feedback({value: this.state.value});
+        this.props._feedback({value: this.state.value});
     }
-});
+}
 
-var NumberValueComponent = React.createClass({
-    render: function () {
+
+class NumberValueComponent extends BaseComponent {
+    constructor() {
+        super();
+        this._bind('_handleChange');
+    }
+
+    render() {
         return <span className="numberValueComponent">
             <label>
                 <input className="input-field" type="number" value={this.state.value}
-                       onChange={this.handleChange}/>
+                       onChange={this._handleChange}/>
             </label>
         </span>
-    },
-    getInitialState: function () {
-        return {value: this.props.value};
-    },
-    handleChange: function (e) {
-        this.setState({value: e.target.value});
-        this.props.feedback({value: this.state.value});
     }
-});
 
-var TextValueComponent = React.createClass({
-    render: function () {
+    getInitialState() {
+        return {value: this.props.value};
+    }
+
+    _handleChange(e) {
+        this.setState({value: e.target.value});
+        this.props._feedback({value: this.state.value});
+    }
+}
+
+
+class TextValueComponent extends BaseComponent {
+    constructor() {
+        super();
+        this._bind('_handleChange')
+    }
+
+    render() {
         return <span className="textValueComponent">
             <label>
-                <input className="input-field" type="text" value={this.state.value} onChange={this.handleChange}/>
+                <input className="input-field" type="text" value={this.state.value} onChange={this._handleChange}/>
             </label>
         </span>
-    },
-    getInitialState: function () {
-        return {value: this.props.value};
-    },
-    handleChange: function (e) {
-        this.setState({value: e.target.value});
-        this.props.feedback({value: this.state.value});
     }
-});
 
-var CombinedValueComponent = React.createClass({
-    render: function () {
+    getInitialState() {
+        return {value: this.props.value};
+    }
+
+    _handleChange(e) {
+        this.setState({value: e.target.value});
+        this.props._feedback({value: this.state.value});
+    }
+}
+
+
+class CombinedValueComponent extends BaseComponent {
+    constructor() {
+        super();
+        this._bind('_handleItemClick', '_feedback');
+    }
+
+    render() {
         return <div className="combinedValueComponent">
             <ul className="collapsible" data-collapsible="accordion">
                 <div className="container"><h5>Atom Types</h5></div>
-                <li name="null" onClick={this.handleItemClick}>
+                <li name="null" onClick={this._handleItemClick}>
                     <div className={"collapsible-header" + (this.state.type == "null" ? " active" : "")}>
                         <i className="material-icons">not_interested</i>Null
                     </div>
                     <div className="collapsible-body"><p><NullValueComponent /></p></div>
                 </li>
-                <li name="boolean" onClick={this.handleItemClick}>
+                <li name="boolean" onClick={this._handleItemClick}>
                     <div className={"collapsible-header"+ (this.state.type == "boolean" ? " active" : "")}>
                         <i className="material-icons">thumbs_up_down</i>Boolean
                     </div>
-                    <div className="collapsible-body"><p><BooleanValueComponent feedback={this.feedback}/></p></div>
+                    <div className="collapsible-body"><p><BooleanValueComponent feedback={this._feedback}/></p></div>
                 </li>
-                <li name="number" onClick={this.handleItemClick}>
+                <li name="number" onClick={this._handleItemClick}>
                     <div className={"collapsible-header"+ (this.state.type == "number" ? " active" : "")}>
                         <i className="material-icons">whatshot</i>Number
                     </div>
-                    <div className="collapsible-body"><p><NumberValueComponent feedback={this.feedback}/></p></div>
+                    <div className="collapsible-body"><p><NumberValueComponent feedback={this._feedback}/></p></div>
                 </li>
-                <li name="text" onClick={this.handleItemClick}>
+                <li name="text" onClick={this._handleItemClick}>
                     <div className={"collapsible-header"+ (this.state.type == "text" ? " active" : "")}>
                         <i className="material-icons">spellcheck</i>Text
                     </div>
-                    <div className="collapsible-body"><p><TextValueComponent feedback={this.feedback}/></p></div>
+                    <div className="collapsible-body"><p><TextValueComponent feedback={this._feedback}/></p></div>
                 </li>
                 <div className="container"><h5>Collection Types</h5></div>
-                <li name="array" onClick={this.handleItemClick}>
+                <li name="array" onClick={this._handleItemClick}>
                     <div className={"collapsible-header"+ (this.state.type == "array" ? " active" : "")}>
                         <i className="material-icons">whatshot</i>Array
                     </div>
                     <div className="collapsible-body"><p>This will add an empty array</p></div>
                 </li>
-                <li name="object" onClick={this.handleItemClick}>
+                <li name="object" onClick={this._handleItemClick}>
                     <div className={"collapsible-header"+ (this.state.type == "object" ? " active" : "")}>
                         <i className="material-icons">whatshot</i>Object
                     </div>
@@ -114,16 +157,18 @@ var CombinedValueComponent = React.createClass({
             </ul>
             <button className="btn waves-effect">Okay</button>
         </div>
-    },
-    getInitialState: function () {
+    }
+
+    getInitialState() {
         // Element set externally.
         return this.props.element;
         // return {
         //     type: "null",
         //     value: null
         // };
-    },
-    handleItemClick: function (evt) {
+    }
+
+    _handleItemClick(evt) {
         if (this.state.type == evt) {
 
         }
@@ -136,17 +181,24 @@ var CombinedValueComponent = React.createClass({
         } else if (evt == "null") {
             this.state.value = null;
         }
-    },
-    feedback: function (newObject) {
+    }
+
+    _feedback(newObject) {
         this.state.value = newObject.value;
     }
-});
+}
 
-var BreadcrumbComponent = React.createClass({
-    render: function () {
+
+class BreadcrumbComponent extends BaseComponent {
+    constructor() {
+        super();
+        this._bind('_handleItemClick');
+    }
+
+    render() {
         var items = [];
         this.state.path.forEach(item => items.push(
-            <a href="javascript:0" name={items.length} onClick={this.handleItemClick} className="breadcrumb"
+            <a href="javascript:0" name={items.length} onClick={this._handleItemClick} className="breadcrumb"
                key={items.length}>{item}</a>
         ));
         return <nav>
@@ -156,8 +208,13 @@ var BreadcrumbComponent = React.createClass({
                 </div>
             </div>
         </nav>
-    },
-    handleItemClick: function (e) {
+    }
+
+    getInitialState() {
+        return {path: this.props.path};
+    }
+
+    _handleItemClick(e) {
         var newPath = [];
         for (var i = 0; i < this.state.path.length; i++) {
             newPath.push(this.state.path[i]);
@@ -167,14 +224,17 @@ var BreadcrumbComponent = React.createClass({
         }
         this.setState({path: newPath});
         // TODO navigate to path
-    },
-    getInitialState: function () {
-        return {path: this.props.path};
     }
-});
+}
 
-var TreeComponent = React.createClass({
-    render: function () {
+
+class TreeComponent extends BaseComponent {
+    constructor() {
+        super();
+        this._bind(); // TODO Nothing yet to add here.
+    }
+
+    render() {
         var flatten = function (key, item) {
             if (item == null) {
                 return <li className="collection-item" key={key}>null</li>
@@ -208,31 +268,42 @@ var TreeComponent = React.createClass({
         };
 
         return <ul className="collection">{flatten("[root]", this.state.tree)}</ul>
-    },
-    getInitialState: function () {
+    }
+
+    getInitialState() {
         return {tree: this.props.tree}
     }
 
-});
+}
 
-var FullComponent = React.createClass({
-    render: function () {
+
+class FullComponent extends BaseComponent {
+    constructor() {
+        super();
+        this._bind(); // TODO Nothing yet.
+    }
+
+    render() {
         return <div>
             <BreadcrumbComponent path={this.state.path}/>
             <TreeComponent tree={this.state.data}/>
             <CombinedValueComponent />
         </div>;
-    },
-    getInitialState: function () {
+    }
+
+    //noinspection JSMethodCanBeStatic
+    getInitialState() {
         return {
             data: {},
             path: ["[root]"]
         }
-    },
-    getJSONRepresentation: function () {
+    }
+
+    getJSONRepresentation() {
         return JSON.stringify(this.state.data);
-    },
-    setDataFromJSON: function (str) {
+    }
+
+    setDataFromJSON(str) {
         this.state.data = JSON.parse(str);
     }
-});
+}
