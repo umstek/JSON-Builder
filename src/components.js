@@ -5,21 +5,23 @@
 // import * as React from "react";
 
 class BaseComponent extends React.Component { // Base Class for ease. :)
-    _bind(...methods) {
-        methods.forEach((method) => this[method] = this[method].bind(this));
+    constructor(props) {
+        super(props);
+        let state = {};
+        Object.assign(state, props);
+        this.state = state;
     }
 }
 
 
 class NullValueComponent extends BaseComponent {
-    constructor() {
-        super();
-        this._bind(); // Not needed.
+    constructor(props) {
+        super(props);
     }
 
     //noinspection JSMethodCanBeStatic
     render() {
-        return <span className="nullValueValueComponent">
+        return <span className="nullValueComponent">
             <i>null</i>
         </span>;
     }
@@ -27,13 +29,12 @@ class NullValueComponent extends BaseComponent {
 
 
 class BooleanValueComponent extends BaseComponent {
-    constructor() {
-        super();
-        this._bind('_handleChange');
+    constructor(props) {
+        super(props);
     }
 
     render() {
-        return <span className="switch booleanValueComponent" onChange={this._handleChange}>
+        return <span className="switch booleanValueComponent" onChange={this._handleChange.bind(this)}>
             <label>
                 False
                 <input type="checkbox" value={this.state.value}/>
@@ -41,11 +42,6 @@ class BooleanValueComponent extends BaseComponent {
                 True
             </label>
         </span>;
-    }
-
-    getInitialState() {
-        // Initial state is set by properties.
-        return {value: this.props.value};
     }
 
     _handleChange(e) {
@@ -57,22 +53,17 @@ class BooleanValueComponent extends BaseComponent {
 
 
 class NumberValueComponent extends BaseComponent {
-    constructor() {
-        super();
-        this._bind('_handleChange');
+    constructor(props) {
+        super(props);
     }
 
     render() {
         return <span className="numberValueComponent">
             <label>
                 <input className="input-field" type="number" value={this.state.value}
-                       onChange={this._handleChange}/>
+                       onChange={this._handleChange.bind(this)}/>
             </label>
         </span>
-    }
-
-    getInitialState() {
-        return {value: this.props.value};
     }
 
     _handleChange(e) {
@@ -83,21 +74,17 @@ class NumberValueComponent extends BaseComponent {
 
 
 class TextValueComponent extends BaseComponent {
-    constructor() {
-        super();
-        this._bind('_handleChange')
+    constructor(props) {
+        super(props);
     }
 
     render() {
         return <span className="textValueComponent">
             <label>
-                <input className="input-field" type="text" value={this.state.value} onChange={this._handleChange}/>
+                <input className="input-field" type="text" value={this.state.value}
+                       onChange={this._handleChange.bind(this)}/>
             </label>
         </span>
-    }
-
-    getInitialState() {
-        return {value: this.props.value};
     }
 
     _handleChange(e) {
@@ -108,47 +95,49 @@ class TextValueComponent extends BaseComponent {
 
 
 class CombinedValueComponent extends BaseComponent {
-    constructor() {
-        super();
-        this._bind('_handleItemClick', '_feedback');
+    constructor(props) {
+        super(props);
     }
 
     render() {
         return <div className="combinedValueComponent">
             <ul className="collapsible" data-collapsible="accordion">
                 <div className="container"><h5>Atom Types</h5></div>
-                <li name="null" onClick={this._handleItemClick}>
+                <li name="null" onClick={this._handleItemClick.bind(this)}>
                     <div className={"collapsible-header" + (this.state.type == "null" ? " active" : "")}>
                         <i className="material-icons">not_interested</i>Null
                     </div>
                     <div className="collapsible-body"><p><NullValueComponent /></p></div>
                 </li>
-                <li name="boolean" onClick={this._handleItemClick}>
+                <li name="boolean" onClick={this._handleItemClick.bind(this)}>
                     <div className={"collapsible-header"+ (this.state.type == "boolean" ? " active" : "")}>
                         <i className="material-icons">thumbs_up_down</i>Boolean
                     </div>
-                    <div className="collapsible-body"><p><BooleanValueComponent feedback={this._feedback}/></p></div>
+                    <div className="collapsible-body"><p><BooleanValueComponent feedback={this._feedback.bind(this)}/>
+                    </p></div>
                 </li>
-                <li name="number" onClick={this._handleItemClick}>
+                <li name="number" onClick={this._handleItemClick.bind(this)}>
                     <div className={"collapsible-header"+ (this.state.type == "number" ? " active" : "")}>
                         <i className="material-icons">whatshot</i>Number
                     </div>
-                    <div className="collapsible-body"><p><NumberValueComponent feedback={this._feedback}/></p></div>
+                    <div className="collapsible-body"><p><NumberValueComponent feedback={this._feedback.bind(this)}/>
+                    </p></div>
                 </li>
-                <li name="text" onClick={this._handleItemClick}>
+                <li name="text" onClick={this._handleItemClick.bind(this)}>
                     <div className={"collapsible-header"+ (this.state.type == "text" ? " active" : "")}>
                         <i className="material-icons">spellcheck</i>Text
                     </div>
-                    <div className="collapsible-body"><p><TextValueComponent feedback={this._feedback}/></p></div>
+                    <div className="collapsible-body"><p><TextValueComponent feedback={this._feedback.bind(this)}/></p>
+                    </div>
                 </li>
                 <div className="container"><h5>Collection Types</h5></div>
-                <li name="array" onClick={this._handleItemClick}>
+                <li name="array" onClick={this._handleItemClick.bind(this)}>
                     <div className={"collapsible-header"+ (this.state.type == "array" ? " active" : "")}>
                         <i className="material-icons">whatshot</i>Array
                     </div>
                     <div className="collapsible-body"><p>This will add an empty array</p></div>
                 </li>
-                <li name="object" onClick={this._handleItemClick}>
+                <li name="object" onClick={this._handleItemClick.bind(this)}>
                     <div className={"collapsible-header"+ (this.state.type == "object" ? " active" : "")}>
                         <i className="material-icons">whatshot</i>Object
                     </div>
@@ -157,15 +146,6 @@ class CombinedValueComponent extends BaseComponent {
             </ul>
             <button className="btn waves-effect">Okay</button>
         </div>
-    }
-
-    getInitialState() {
-        // Element set externally.
-        return this.props.element;
-        // return {
-        //     type: "null",
-        //     value: null
-        // };
     }
 
     _handleItemClick(evt) {
@@ -190,15 +170,14 @@ class CombinedValueComponent extends BaseComponent {
 
 
 class BreadcrumbComponent extends BaseComponent {
-    constructor() {
-        super();
-        this._bind('_handleItemClick');
+    constructor(props) {
+        super(props);
     }
 
     render() {
         var items = [];
         this.state.path.forEach(item => items.push(
-            <a href="javascript:0" name={items.length} onClick={this._handleItemClick} className="breadcrumb"
+            <a href="javascript:0" name={items.length} onClick={this._handleItemClick.bind(this)} className="breadcrumb"
                key={items.length}>{item}</a>
         ));
         return <nav>
@@ -208,10 +187,6 @@ class BreadcrumbComponent extends BaseComponent {
                 </div>
             </div>
         </nav>
-    }
-
-    getInitialState() {
-        return {path: this.props.path};
     }
 
     _handleItemClick(e) {
@@ -229,9 +204,8 @@ class BreadcrumbComponent extends BaseComponent {
 
 
 class TreeComponent extends BaseComponent {
-    constructor() {
-        super();
-        this._bind(); // TODO Nothing yet to add here.
+    constructor(props) {
+        super(props);
     }
 
     render() {
@@ -270,40 +244,22 @@ class TreeComponent extends BaseComponent {
         return <ul className="collection">{flatten("[root]", this.state.tree)}</ul>
     }
 
-    getInitialState() {
-        return {tree: this.props.tree}
-    }
-
 }
 
 
 class FullComponent extends BaseComponent {
-    constructor() {
-        super();
-        this._bind(); // TODO Nothing yet.
+    constructor(props) {
+        super({
+            path: props.path.split("/"),
+            data: JSON.parse(props.data)
+        })
     }
 
     render() {
         return <div>
-            <BreadcrumbComponent path={this.state.path}/>
-            <TreeComponent tree={this.state.data}/>
+            <BreadcrumbComponent path={this.props.path}/>
+            <TreeComponent tree={this.props.data}/>
             <CombinedValueComponent />
         </div>;
-    }
-
-    //noinspection JSMethodCanBeStatic
-    getInitialState() {
-        return {
-            data: {},
-            path: ["[root]"]
-        }
-    }
-
-    getJSONRepresentation() {
-        return JSON.stringify(this.state.data);
-    }
-
-    setDataFromJSON(str) {
-        this.state.data = JSON.parse(str);
     }
 }
