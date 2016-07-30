@@ -1,9 +1,3 @@
-/**
- * Created by Wickramaranga on 7/4/2016.
- */
-
-// import * as React from "react";
-
 class BaseComponent extends React.Component { // Base Class for ease. :)
     constructor(props) {
         super(props);
@@ -45,9 +39,10 @@ class BooleanValueComponent extends BaseComponent {
     }
 
     _handleChange(e) {
-        this.setState({value: e.target.value});
+        let value = e.target.value == "on";
+        this.setState({value});
         // Feedback function enables propagation of data to upper layers.
-        this.props._feedback({value: this.state.value});
+        this.props.feedback({value});
     }
 }
 
@@ -67,8 +62,9 @@ class NumberValueComponent extends BaseComponent {
     }
 
     _handleChange(e) {
-        this.setState({value: e.target.value});
-        this.props._feedback({value: this.state.value});
+        let value = e.target.value;
+        this.setState({value});
+        this.props.feedback({value});
     }
 }
 
@@ -88,8 +84,9 @@ class TextValueComponent extends BaseComponent {
     }
 
     _handleChange(e) {
-        this.setState({value: e.target.value});
-        this.props._feedback({value: this.state.value});
+        let value = e.target.value;
+        this.setState({value});
+        this.props.feedback({value});
     }
 }
 
@@ -113,21 +110,27 @@ class CombinedValueComponent extends BaseComponent {
                     <div className={"collapsible-header"+ (this.state.type == "boolean" ? " active" : "")}>
                         <i className="material-icons">thumbs_up_down</i>Boolean
                     </div>
-                    <div className="collapsible-body"><p><BooleanValueComponent feedback={this._feedback.bind(this)}/>
+                    <div className="collapsible-body"><p><BooleanValueComponent
+                        value={this.state.type == "boolean" ? this.state.value : false}
+                        feedback={this._feedback.bind(this)}/>
                     </p></div>
                 </li>
                 <li name="number" onClick={this._handleItemClick.bind(this)}>
                     <div className={"collapsible-header"+ (this.state.type == "number" ? " active" : "")}>
                         <i className="material-icons">whatshot</i>Number
                     </div>
-                    <div className="collapsible-body"><p><NumberValueComponent feedback={this._feedback.bind(this)}/>
+                    <div className="collapsible-body"><p><NumberValueComponent
+                        value={this.state.type == "number" ? this.state.value : 0}
+                        feedback={this._feedback.bind(this)}/>
                     </p></div>
                 </li>
                 <li name="text" onClick={this._handleItemClick.bind(this)}>
                     <div className={"collapsible-header"+ (this.state.type == "text" ? " active" : "")}>
                         <i className="material-icons">spellcheck</i>Text
                     </div>
-                    <div className="collapsible-body"><p><TextValueComponent feedback={this._feedback.bind(this)}/></p>
+                    <div className="collapsible-body"><p><TextValueComponent
+                        value={this.state.type == "text" ? this.state.value : ""} feedback={this._feedback.bind(this)}/>
+                    </p>
                     </div>
                 </li>
                 <div className="container"><h5>Collection Types</h5></div>
@@ -150,7 +153,7 @@ class CombinedValueComponent extends BaseComponent {
 
     _handleItemClick(evt) {
         if (this.state.type == evt) {
-
+            this.state.type = "";
         }
         this.state.type = evt;
 
@@ -249,17 +252,14 @@ class TreeComponent extends BaseComponent {
 
 class FullComponent extends BaseComponent {
     constructor(props) {
-        super({
-            path: props.path.split("/"),
-            data: JSON.parse(props.data)
-        })
+        super(props);
     }
 
     render() {
         return <div>
             <BreadcrumbComponent path={this.props.path}/>
             <TreeComponent tree={this.props.data}/>
-            <CombinedValueComponent />
+            <CombinedValueComponent type="text" value={"asdfghjkl"}/>
         </div>;
     }
 }
