@@ -1,105 +1,9 @@
-// import React from 'react';
-// import ReactDOM from 'react-dom';
-
-class BaseComponent extends React.Component { // Base Class for ease. :)
-    constructor(props) {
-        super(props);
-    }
-}
-
-
-class NullValueComponent extends BaseComponent {
-    constructor(props) {
-        super(props);
-    }
-
-    //noinspection JSMethodCanBeStatic
-    render() {
-        return <span className="nullValueComponent">
-            <i>null</i>
-        </span>;
-    }
-}
-
-
-class BooleanValueComponent extends BaseComponent {
-    constructor(props) {
-        super(props);
-        this.state = {value: props.value};
-        this._handleChange = this._handleChange.bind(this);
-    }
-
-    render() {
-        return <span className="switch booleanValueComponent" onChange={this._handleChange}>
-            <label>
-                False
-                <input type="checkbox" value={this.state.value}/>
-                <span className="lever"/>
-                True
-            </label>
-        </span>;
-    }
-
-    _handleChange(evt) {
-        let value = evt.target.value == "on"; // Convert 'on' and 'off' to true and false.
-        this.setState({value});
-        // Feedback function enables propagation of data to parent components.
-        this.props.feedback({value});
-    }
-}
-BooleanValueComponent.propTypes = {value: React.PropTypes.bool, feedback: React.PropTypes.func};
-BooleanValueComponent.defaultProps = {value: false, feedback: (obj) => console.log(obj.value)};
-
-
-class NumberValueComponent extends BaseComponent {
-    constructor(props) {
-        super(props);
-        this.state = {value: props.value};
-        this._handleChange = this._handleChange.bind(this);
-    }
-
-    render() {
-        return <span className="numberValueComponent">
-            <label>
-                <input className="input-field" type="number" value={this.state.value} onChange={this._handleChange}/>
-            </label>
-        </span>
-    }
-
-    _handleChange(e) {
-        let value = e.target.value;
-        this.setState({value});
-        this.props.feedback({value});
-    }
-}
-NumberValueComponent.propTypes = {value: React.PropTypes.number, feedback: React.PropTypes.func};
-NumberValueComponent.defaultProps = {value: 0, feedback: (obj) => console.log(obj.value)};
-
-
-class TextValueComponent extends BaseComponent {
-    constructor(props) {
-        super(props);
-        this.state = {value: props.value};
-        this._handleChange = this._handleChange.bind(this);
-    }
-
-    render() {
-        return <span className="textValueComponent">
-            <label>
-                <input className="input-field" type="text" value={this.state.value} onChange={this._handleChange}/>
-            </label>
-        </span>
-    }
-
-    _handleChange(e) {
-        let value = e.target.value;
-        this.setState({value});
-        this.props.feedback({value});
-    }
-}
-TextValueComponent.propTypes = {value: React.PropTypes.string, feedback: React.PropTypes.func};
-TextValueComponent.defaultProps = {value: 0, feedback: (obj) => console.log(obj.value)};
-
+import React from "react";
+import BaseComponent from "./BaseComponent.jsx";
+import NullValueComponent from "./NullValueComponent.jsx";
+import BooleanValueComponent from "./BooleanValueComponent.jsx";
+import NumberValueComponent from "./NumberValueComponent.jsx";
+import TextValueComponent from "./TextValueComponent.jsx";
 
 class CombinedValueComponent extends BaseComponent {
     constructor(props) {
@@ -193,14 +97,22 @@ class CombinedValueComponent extends BaseComponent {
 
             <a className="btn waves-light waves-effect">Okay</a>
             <a className="btn waves-light waves-effect">Cancel</a>
-        </div>
+        </div>;
     }
 
     _handleComponentClick(evt) { // synthetic event, -undefined, -event
+        // evt.preventDefault();
         // evt.persist();
         // console.log(evt);
 
         let elem = evt.target;
+
+        if (elem.tagName != "I" && !(elem.tagName == "DIV" && elem.classList.contains('collapsible-header'))) {
+            evt.stopPropagation();
+            evt.preventDefault();
+            return;
+        } // Accept only header clicks (including icon).
+
         do { // Find the list item, which has the name attribute containing type.
             elem = elem.parentElement;
         } while (elem.tagName != "LI");
@@ -209,6 +121,8 @@ class CombinedValueComponent extends BaseComponent {
 
         if (name == this.state.type) {
             elem.childNodes[0].classList.add("active");
+        } else {
+            elem.childNodes[0].classList.toggle("active");
         }
 
         console.log(this.state.value);
@@ -236,7 +150,6 @@ class CombinedValueComponent extends BaseComponent {
                 default:
                     break;
             }
-            console.log(this.state);
         } else {
             console.log('t');
             switch (name) {
@@ -266,8 +179,9 @@ class CombinedValueComponent extends BaseComponent {
                 default:
                     break;
             }
-            console.log(this.state);
         }
+
+        console.log(this.state);
     }
 
     _handleComponentValueChange(newObject) {
@@ -287,100 +201,4 @@ CombinedValueComponent.propTypes = {
 };
 CombinedValueComponent.defaultProps = {value: null, type: "null"};
 
-
-class BreadcrumbComponent extends BaseComponent {
-    constructor(props) {
-        super(props);
-        this.state = {path: props.path};
-        this._handleNavigate = this._handleNavigate.bind(this);
-    }
-
-    render() {
-        var items = [];
-        this.state.path.forEach(item => items.push(
-            <a href="javascript:(0)" name={items.length} onClick={this._handleNavigate} className="breadcrumb"
-               key={items.length}>{item}</a>
-        ));
-        return <nav>
-            <div className="nav-wrapper">
-                <div className="col s12">
-                    {items}
-                </div>
-            </div>
-        </nav>
-    }
-
-    _handleNavigate(e) {
-        var newPath = [];
-        for (var i = 0; i < this.state.path.length; i++) {
-            newPath.push(this.state.path[i]);
-            if (i == e.target.name) {
-                break;
-            }
-        }
-        this.setState({path: newPath});
-        props.feedback({newPath});
-    }
-}
-BreadcrumbComponent.propTypes = {path: React.PropTypes.array, feedback: React.PropTypes.func};
-BreadcrumbComponent.defaultProps = {path: ['[root]'], feedback: (obj) => console.log(obj.value)};
-
-
-class TreeComponent extends BaseComponent {
-    constructor(props) {
-        super(props);
-        this.state = {tree: props.tree}
-    }
-
-    render() {
-        var flatten = function (key, item) {
-            if (item == null) {
-                return <li className="collection-item" key={key}>null</li>
-            } else if (typeof item == 'boolean') {
-                return <li className="collection-item" key={key}><a href="javascript:0">{key}</a>: {item}</li>
-            } else if (typeof item == 'number') {
-                return <li className="collection-item" key={key}><a href="javascript:0">{key}</a>: {item}</li>
-            } else if (typeof item == 'string') {
-                return <li className="collection-item" key={key}><a href="javascript:0">{key}</a>: {item}</li>
-            } else if (item.isArray) {
-                var elements = [];
-                for (var i = 0; i < item.length; i++) {
-                    elements.push(flatten(i, item[i]));
-                }
-                return <li className="collection-item" key={key}>
-                    <a href="javascript:0">{key}</a>:
-                    <ol className="collection">{elements}</ol>
-                </li>;
-            } else {
-                var elementsO = [];
-                for (var j in item) {
-                    if (item.hasOwnProperty(j)) {
-                        elementsO.push(flatten(j, item[j]));
-                    }
-                }
-                return <li className="collection-item" key={key}>
-                    <a href="javascript:0">{key}</a>:
-                    <ul className="collection">{elementsO}</ul>
-                </li>;
-            }
-        };
-
-        return <ul className="collection">{flatten("[root]", this.state.tree)}</ul>
-    }
-
-}
-
-
-class FullComponent extends BaseComponent {
-    constructor(props) {
-        super(props);
-    }
-
-    render() {
-        return <div>
-            <BreadcrumbComponent path={this.props.path}/>
-            <TreeComponent tree={this.props.data}/>
-            <CombinedValueComponent type="null" value={null}/>
-        </div>;
-    }
-}
+export default CombinedValueComponent;

@@ -1,3 +1,6 @@
+import ReactDOM from "react-dom";
+import FullComponent from "./components/FullComponent.jsx";
+
 var mjson =
 {
     'name': 'lol',
