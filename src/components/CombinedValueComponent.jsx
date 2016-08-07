@@ -181,11 +181,12 @@ class CombinedValueComponent extends BaseComponent {
             }
         }
 
+        this.forceUpdate();
         console.log(this.state);
     }
 
     _handleComponentValueChange(newObject) {
-        this.setState(Object.assign(this.state, {value: newObject.value}));
+        this.setState({value: newObject.value});
         console.log(this.state);
     }
 }

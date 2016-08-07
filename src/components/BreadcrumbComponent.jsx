@@ -32,7 +32,7 @@ class BreadcrumbComponent extends BaseComponent {
             }
         }
         this.setState({path: newPath});
-        props.feedback({newPath});
+        this.props.feedback({newPath});
     }
 }
 BreadcrumbComponent.propTypes = {path: React.PropTypes.array, feedback: React.PropTypes.func};
